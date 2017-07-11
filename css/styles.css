@@ -1,0 +1,149 @@
+html, body{
+	margin: 0;	/* 余白の削除 */
+	padding: 0;	/* 余白の削除 */
+	height: 100%;	/* 縦の高さを100% */
+	width: 100%;	/* 横の幅を100% */
+	background-color: #f4f4f4;
+}
+
+* {
+	font-family:"Hiragino Kaku Gothic ProN", "游ゴシック", YuGothic, Meiryo, sans-serif;
+}
+
+i {
+	font-size:18px;
+}
+
+nav {
+	height:50px;
+	padding: 0 20px;
+}
+
+.container {
+	padding-top: 50px;
+	height: calc(100% - 80px);
+}
+
+/*
+.navbar-toggle {
+	z-index: 2;
+}
+*/
+
+.navbar-brand-center {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 0;
+	text-align: center;
+	margin: auto;
+}
+
+.navbar-default {
+	border: none;
+	background-color: #f4f4f4;
+	margin-bottom: 0;
+}
+.navbar-default .navbar-brand {
+	color: #444;
+	font-weight: bold;
+}
+
+.navbar-default .navbar-brand:hover{
+	color: #444;
+}
+
+.card {
+	width: 100%;
+	height:100%;
+	background-image:url(http://www.spot.town/wordpress/wp-content/uploads/2016/01/b4948185e580db86e06feac0295a11ee_m.jpg);
+	background-position: center center;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	position: relative;
+}
+
+.desc {
+	padding-top: 50px;
+	position: absolute;
+	bottom:0px;
+	padding-left: 20px;
+	width:100%;
+	background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+}
+
+.desc h1{
+	color:#fff;
+	font-size:24px;
+}
+
+.desc p{
+	color:#fff;
+	font-size:16px;
+}
+
+
+
+.select {
+	bottom: 0;
+	width: 100%;
+	height: 80px;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.select .col-xs-4{
+	width: 60px;
+	height: 60px;
+	background-color: #fff;
+	border-radius: 50%;
+	font-size: 20px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.row {
+	margin:0;
+	padding: 0;
+}
+.s_button{
+	cursor: pointer;
+}
+
+.s_button:hover{
+	background-color:#ddd;
+}
+
+.btn-circle i{
+/*	text-align: center;*/
+}
+
+/*
+.select {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: 25%;
+	width: 100%;
+	background-color: rgba(255, 0, 0, 0.1);
+}
+
+.select img {
+	width: 100px;
+	margin: 20px 30px;
+	margin: 0 10px;
+}
+*/
+
+/*スマホ*/
+@media (min-width: 768px) {
+	.navbar-brand-center {
+		margin-left: 0 !important;
+	}
+}

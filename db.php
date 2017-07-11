@@ -3,7 +3,7 @@ function db_con(){
 	//DB接続情報定義
 	$dbinfo = array(
 	//ローカルDB
-	"host"=>'mysql:dbname=_resolv;charset=utf8;host=mysql506.heteml.jp', "id" => '_resolv',"pw" => 'paremore123'
+	"host"=>'mysql:dbname=_resolv;charset=utf8;host=localhost', "id" => 'root',"pw" => ''
 
 	//本番DB
 //	"host"=>'mysql:dbname=keimorimoto_db;charset=utf8;host=mysql611.db.sakura.ne.jp',"id" => 'keimorimoto',"pw" => 'paramore0123'
