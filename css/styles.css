@@ -4,6 +4,7 @@ html, body{
 	height: 100%;	/* 縦の高さを100% */
 	width: 100%;	/* 横の幅を100% */
 	background-color: #f4f4f4;
+	-webkit-overflow-scrolling: touch;
 }
 
 * {
@@ -22,6 +23,8 @@ nav {
 .container {
 	padding-top: 50px;
 	height: calc(100% - 80px);
+	transition: all 200ms 0s ease;
+	position: relative;
 }
 
 /*
@@ -61,7 +64,6 @@ nav {
 	border-radius: 10px;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
-	position: relative;
 }
 
 .desc {
@@ -95,6 +97,10 @@ nav {
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
+	position: fixed;
+	left: 0;
+	/*background: #f8f8f8;*/
+	background: linear-gradient(rgba(230, 230, 230, 0), rgba(230, 230, 230, 1));
 }
 
 .select .col-xs-4{
@@ -146,4 +152,96 @@ nav {
 	.navbar-brand-center {
 		margin-left: 0 !important;
 	}
+}
+
+.mypage_link{
+	padding-top: 15px;
+}
+
+.mypage_back{
+	padding-top: 15px;
+}
+.mypage_back i{
+	position: absolute;
+	right: 20px;
+	top:15px;
+	z-index: 10;
+}
+
+.back_icon{
+	position: fixed;
+	border-radius: 100%;
+	padding: 5px;
+	font-size: 20px;
+	color: #666;
+	top: 10px;
+	right: 10px;
+	background: #f8f8f8;
+	box-shadow: 1px 1px 1px #666;
+}
+
+.left_30{
+	padding-left: 30px;
+	line-height: 2em;
+	padding: 8px;
+	border-top: 1px solid #d8d8d8;
+}
+
+.yoyaku_btn, .henkou_btn, .like_itiran_btn{
+	/*border: 1px solid #000;*/
+	padding: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin:40px auto 100px auto;
+	background: #F19483;
+	border-radius: 10px;
+	transition: all 300ms 0s ease;
+	width: 90%;
+}
+
+.my_info{
+	position: absolute;
+	top: 80px;
+	left: -130%;
+	width: 100%;
+	text-align: center;
+}
+
+.mylike_check{
+	overflow-x: auto;
+	display: flex;
+	width: 100%;
+}
+
+.like_event{
+	min-width: 150px;
+	margin: 2px;
+	height: 150px;
+	/*border: 1px solid #000;*/
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	background-position: center;
+	background-size: cover;
+	border-radius: 100%;
+	background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+}
+
+.henkou_btn, .like_itiran_btn{
+	margin-bottom: 50px;
+}
+
+.like_title{
+	color: white;
+	padding: 5px 20px;
+}
+
+.calendar{
+	background-image: url(http://frame-illust.com/fi/wp-content/uploads/2017/02/cal-201801.png);
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	margin: 0 15px;
+	height: 250px;
 }

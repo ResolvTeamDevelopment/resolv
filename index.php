@@ -1,130 +1,9 @@
-<?php
-    session_start();
-    include("db.php");
-
-    $pdo = db_con();
-
-  //セッションでuserID取得
-    $user_id = 0;
-    // $user_id = $_SESSION["user_id"];
-
-  /*
-  ******************
-  user_profireテーブル
-  （ユーザーが選択している悩みを取得）
-  ******************
-  */
-    $profile = $pdo->prepare("SELECT * FROM user_profile WHERE user_id ='$user_id'");
-    $profile_status = $profile->execute();
-
-    if($profile_status==false){
-      //execute（SQL実行時にエラーがある場合）
-      $error = $profile->errorInfo();
-      exit("ErrorQuery:".$error[2]);
-
-    }else{
-      $profile_result = $profile->fetch(PDO::FETCH_ASSOC);
-      $training = $profile_result["training"];
-      $friend = $profile_result["friend"];
-      $learning = $profile_result["learning"];
-    }
-    $profile_array = [];
-    if($training == 1) {
-      array_push($profile_array, "training");
-    }
-    if ($friend == 1) {
-      array_push($profile_array, "friend");
-    }
-    if ($learning == 1) {
-      array_push($profile_array, "learning");
-    }
-    $profile_array_count = count($profile_array);
-    $profile_where;
-    for ($i=0; $i<$profile_array_count ; $i++) {
-      if ($i==0) {
-        $profile_where = $profile_array[$i]."=1 OR ";
-      }else {
-        $profile_where = $profile_where.$profile_array[$i]."=1 OR ";
-      }
-    }
-    $profile_where = rtrim($profile_where, " OR ");
-
-  /*
-  ******************
-  user_needs_scoreテーブル
-  （ユーザーのニーズスコアを取得）
-  ******************
-  */
-    $needs_score = $pdo->prepare("SELECT * FROM user_needs_score WHERE user_id ='$user_id'");
-    $needs_score_status = $needs_score->execute();
-
-    if($needs_score_status==false){
-      //execute（SQL実行時にエラーがある場合）
-      $error = $needs_score->errorInfo();
-      exit("ErrorQuery:".$error[2]);
-
-    }else{
-      $needs_score_result = $needs_score->fetch(PDO::FETCH_ASSOC);
-      //全ジャンルのニーズスコア合計
-      $needs_total_score = $needs_score_result["genre_id_0"]+$needs_score_result["genre_id_1"]+$needs_score_result["genre_id_2"]+$needs_score_result["genre_id_3"];
-		
-		$needs = [];
-		for ($i=0;$i<4;$i++){
-			$needs[$i] = $needs_score_result["genre_id_".$i]/$needs_total_score*100;
-			if($i>0) {
-				$needs[$i] += $needs[$i-1];
-			}
-			
-		}
-    }
-
-  /*
-  ******************
-  fanc_infoテーブル
-  ******************
-  */
-  // 条件を満たしているファシリティを取得。各パーセンテージに基づいて表示
-
-
-    $event_info = $pdo->prepare("SELECT * FROM event_info WHERE $profile_where");
-    $event_info_status = $event_info->execute();
-
-    if($event_info_status==false){
-      //execute（SQL実行時にエラーがある場合）
-      $error = $event_info->errorInfo();
-      exit("ErrorQuery:".$error[2]);
-
-    }else{
-      $event_info_result = $event_info->fetch(PDO::FETCH_ASSOC);
-      // // 100分の20の確率でニーズ10以下表示
-      // $rand_first = rand(0,100);
-      // if($rand_first<20){
-      //   $rand_second = rand($needs_count<10);
-      //
-      // }else{
-      //   $rand_second = rand($needs_count);
-      // }
-
-      $rand = rand(0,100);
-      if($rand<$needs[0]){
-        var_dump("サッカー");
-      }elseif($rand<$needs[1]){
-        var_dump("野球");
-      }elseif($rand<$needs[2]){
-        var_dump("テニス");
-      }else{
-        var_dump("読書");
-      }
-    }
-?>
-
-
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>resolv - リゾルブ</title>
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/styles.css" rel="stylesheet">
@@ -132,6 +11,16 @@
 	<link href='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css'>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js'></script>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'></script>
+	<!-- <script src="js/clickspark.js"></script> -->
+	<style>
+		html,body{
+			overflow: hidden;
+		}
+
+		.head_hide{
+			display: none;
+		}
+	</style>
 	<script>
 	$(function(){
   $(".card").draggable({
@@ -139,10 +28,10 @@
     stop : function (event , ui){
       var offset = $(this).offset();
       // alert(offset.left);
-      if (offset.left <= -50){
+      if (offset.left <= -80){
         alert("batsu");
         $(this).css("display","none");
-      }else if (offset.left >= 180) {
+      }else if (offset.left >= 80) {
         alert("maru");
         // $(".submit").click();
         $(this).css("display","none");
@@ -152,9 +41,71 @@
     }
   });
 
-  $(".select_maru").on("click", function(){
-
+	var container_css_facinfo = {
+		"padding" : "0",
+		"height" : "150px"
+	}
+  $(".card").on("click", function(){
+		if ($("nav").hasClass("head_hide")) {
+			$(".fac_info").hide();
+			$(".card").draggable("enable");
+			$("nav").removeClass("head_hide");
+			$(".container").removeAttr('style');
+			$(".back_icon").hide();
+			$(".card").css("border-radius", "10px");
+			$(".desc").css("border-radius", "10px");
+			$("body").css("overflow", "hidden");
+		}else{
+	    $("nav").addClass("head_hide");
+			$(".card").draggable("disable");
+			$(".container").css(container_css_facinfo);
+			$("body").css("overflow-y", "auto");
+			$(".fac_info").slideDown("fast");
+			$(".back_icon").show();
+			$(".card").css("border-radius", "0px");
+			$(".desc").css("border-radius", "0px");
+		}
   });
+
+  $(".mypage_link").on("click", function(){
+			$(this).hide();
+			$(".card").draggable("disable");
+			$(".select").hide();
+			$("body").css("overflow-y", "auto");
+			$(".mypage_back").show();
+			$(".card").addClass("show_mypage");
+			$(".card").animate({"left": "+=130%"}, "fast");
+			$(".my_info").show();
+			$(".my_info").animate({"left": "+=130%"}, "fast");
+  })
+
+	$(".mypage_back").on("click", function(){
+		$(this).hide();
+		$(".card").draggable("enable");
+		$(".select").slideDown("fast");
+		$("body").css("overflow-y", "hidden");
+		$(".mypage_link").show();
+		$(".card").removeClass("show_mypage");
+		$(".card").animate({"left": "-=130%"}, "fast");
+		$(".my_info").hide();
+		$(".my_info").animate({"left": "-=130%"}, "fast");
+	});
+
+	// $(".yoyaku_btn").clickSpark({
+	// 	particleImagePath: 'https://raw.githubusercontent.com/ymc-thzi/clickspark.js/master/demo/particle-2.png',
+	// 	particleCount: 10,
+	// 	particleSpeed: 8,
+	// 	particleSize: 15,
+	// 	particleDuration: 0,
+	// 	particleRotationSpeed: 20
+	// });
+
+	$(".yoyaku_btn").on("click", function(){
+		setTimeout(function(){
+			$("body").css("overflow", "auto");
+		},500)
+	});
+
 })
 </script>
 </head>
@@ -163,6 +114,9 @@
 	<div class="container">
 		<nav class="navbar navbar-default navbar-fixed-top">
 			<div class="navbar-header">
+				<div class="mypage_back" style="display:none">
+					<i class="glyphicon glyphicon-arrow-right"></i>
+				</div>
 <!--
 				<button class="navbar-toggle" data-toggle="collapse" data-target=".target">
 					<span class="icon-bar"></span>
@@ -170,12 +124,12 @@
 					<span class="icon-bar"></span>
 				</button>
 -->
-				<a class="navbar-brand navbar-brand-center" href="">Resolv</a>
+				<div class="navbar-brand navbar-brand-center"><span>Resolv</span></div>
+				<div class="mypage_link">
+					<i class="glyphicon glyphicon-user"></i>
+				</div>
 			</div>
 			<div>
-				<ul class="nav navbar-nav">
-					<li class="acinfo"><a href="#"><i class="glyphicon glyphicon-user"></i></a></li>
-				</ul>
 <!--
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="">Link3</a></li>
@@ -184,19 +138,114 @@
 			</div>
 		</nav>
 		<div class="card">
+			<i class="back_icon glyphicon glyphicon-arrow-down" style="display:none"></i>
 			<div class="desc">
-				<h1>渋谷フットサルクラブ</h1>
+				<h1>渋谷フットサル大会</h1>
 				<p>@渋谷区道玄坂, フットサル</p>
 			</div>
 		</div>
+	<!-- 施設詳細画面 -->
+		<div class="fac_info" style="display:none">
+				<p class="left_30" style="padding-top:30px"><span style="font-weight:bold">日付</span>　　　2017/10/02</p>
+				<p class="left_30"><span style="font-weight:bold">時間</span>　　　19:00〜21:00</p>
+				<p class="left_30"><span style="font-weight:bold">料金</span>　　　1000円</p>
+				<p class="left_30"><span style="font-weight:bold">場所</span>　　　渋谷区道玄坂1-2-3<br>　　　　　渋谷フットサルクラブ</p>
+				<p class="left_30"><span style="font-weight:bold">詳細</span>　　　みんなでワイワイやりましょう！<br>　　　　　チーム参加も個人参加もOKです！　</p>
+				<p class="left_30"><span style="font-weight:bold">予約状況</span>　　32人 / 50人</p>
+				<div class="yoyaku_btn">
+						カレンダー予約
+				</div>
+				<p class="left_30" style="border-top:none"><span style="font-size:18px">施設情報</span></p>
+				<p class="left_30"><span style="font-weight:bold">施設名</span>　　渋谷フットサルクラブ<br>　　　　　<span style="color:blue">この施設で検索する</span></p>
+				<p class="left_30"><span style="font-weight:bold">時間</span>　　　9:00~23:00</p>
+				<p class="left_30"><span style="font-weight:bold">料金</span>　　　大人500円　小人250円</p>
+				<p class="left_30"><span style="font-weight:bold">定休日</span>　　毎週火曜日</p>
+				<p class="left_30"><span style="font-weight:bold">場所</span>　　　〒123-1123<br>　　　　　渋谷区道玄坂1-2-3</p>
+				<p style="height:150px">　</p>
+		</div>
 
+	<!-- マイページ画面 -->
+		<div class="my_info" style="display:none">
+				<img src="https://pbs.twimg.com/profile_images/686486647270080512/_ACbdMxU.png" alt="プロフが〜" style="height:150px; width:auto">
+				<p class="left_30" style="border-top:none"><span style="font-weight:bold">ID</span>　　　goootooou</p>
+				<p class="left_30"><span style="font-weight:bold">PW</span>　　　goootooou</p>
+				<p class="left_30"><span style="font-weight:bold">勤務地</span>　　　渋谷区</p>
+				<p class="left_30"><span style="font-weight:bold">居住地</span>　　　鎌倉市</p>
+				<a date-toggle="modal" href="#myproEdit" class="btn btn-primary henkou_btn">
+						編集する
+				</a>
+				<!-- <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myproEdit">MODAL</button><br> -->
+				<p style="font-size:18px; border-top:3px solid #d8d8d8; padding-top:20px">Likeしたイベント</p>
+				<div class="mylike_check">
+					<div class="like_event" style="background-image:url(https://e-venz.com/wp/wp-content/uploads/2016/07/2-40.jpg)">
+						<span class="like_title">表参道卓球</span>
+					</div>
+					<div class="like_event" style="background-image:url(http://www.sakaitennis.com/pic_c047.jpg)">
+						<span class="like_title">六本木テニス</span>
+					</div>
+					<div class="like_event" style="background-image:url(http://tsukubaplacelab.com/wp-content/uploads/2017/02/%E3%82%82%E3%81%8F%E3%82%82%E3%81%8F%E4%BC%9A-1024x681.jpg)">
+						<span class="like_title">品川もくもく会</span>
+					</div>
+					<div class="like_event" style="background-image:url(http://rafftel.up.n.seesaa.net/rafftel/image/120611EChouseparty.jpg?d=a1)">
+						<span class="like_title">新宿パーティー</span>
+					</div>
+					<div class="like_event" style="background-image:url(https://e-venz.com/wp/wp-content/uploads/2016/07/2-40.jpg)">
+						<span class="like_title">表参道卓球</span>
+					</div>
+					<div class="like_event" style="background-image:url(http://www.sakaitennis.com/pic_c047.jpg)">
+						<span class="like_title">六本木テニス</span>
+					</div>
+					<div class="like_event" style="background-image:url(http://tsukubaplacelab.com/wp-content/uploads/2017/02/%E3%82%82%E3%81%8F%E3%82%82%E3%81%8F%E4%BC%9A-1024x681.jpg)">
+						<span class="like_title">品川もくもく会</span>
+					</div>
+					<div class="like_event" style="background-image:url(http://rafftel.up.n.seesaa.net/rafftel/image/120611EChouseparty.jpg?d=a1)">
+						<span class="like_title">新宿パーティー</span>
+					</div>
+					<div class="like_event" style="background-image:url(https://e-venz.com/wp/wp-content/uploads/2016/07/2-40.jpg)">
+						<span class="like_title">表参道卓球</span>
+					</div>
+					<div class="like_event" style="background-image:url(http://www.sakaitennis.com/pic_c047.jpg)">
+						<span class="like_title">六本木テニス</span>
+					</div>
+					<div class="like_event" style="background-image:url(http://tsukubaplacelab.com/wp-content/uploads/2017/02/%E3%82%82%E3%81%8F%E3%82%82%E3%81%8F%E4%BC%9A-1024x681.jpg)">
+						<span class="like_title">品川もくもく会</span>
+					</div>
+					<div class="like_event" style="background-image:url(http://rafftel.up.n.seesaa.net/rafftel/image/120611EChouseparty.jpg?d=a1)">
+						<span class="like_title">新宿パーティー</span>
+					</div>
+				</div>
+				<div class="like_itiran_btn">
+						一覧を見る
+				</div>
+				<p style="font-size:18px; border-top:3px solid #d8d8d8; padding-top:20px">カレンダー</p>
+				<div class="calendar"></div>
+				<div class="henkou_btn">
+						イベントを確認
+				</div>
+		</div>
+		<div class="modal fade" id="myproEdit">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">My Modal</h4>
+					</div>
+					<div class="modal-body">
+						こんにちは！
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary">OK!</button>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="select row">
 			<div class="col-xs-4 s_button"><img src="images/ng.png" alt="NG"></div>
 			<div class="col-xs-4 s_button"><img src="images/star.png" alt="お気に入り"></div>
 			<div class="col-xs-4 s_button"><img src="images/good.png" alt="OK"></div>
 		</div>
 	</div>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
 	<script src="js/bootstrap.min.js"></script>
 </body>
 
