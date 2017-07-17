@@ -238,7 +238,30 @@ if($ev_info_stts==false){
 	}
 }
 
-$info = array($set,$ev_info,$gnr_info,$prfl_re);
+/*******************
+地域情報テーブル取得（place）
+*******************/
+$sql="SELECT * from place";
+$place_info = $pdo->prepare($sql);
+$plc_info_stts = $place_info->execute();
+$plc_info=[];
+
+if($plc_info_stts==false){
+	$error = $place_info->errorInfo();
+	exit("ErrorQuery:".$error[2]);
+
+}else{
+	$i=0;
+	while($plc_info_re = $place_info->fetch(PDO::FETCH_ASSOC)){
+		$plc_info[$i]["plc_id"] = $plc_info_re["plc_id"];
+		$plc_info[$i]["name"] = $plc_info_re["name"];
+		$plc_info[$i]["pref"] = $plc_info_re["pref"];
+		$plc_info[$i]["area"] = $plc_info_re["area"];
+		$i++;
+	}
+}
+
+$info = array($set,$ev_info,$gnr_info,$prfl_re,$plc_info);
 $json = json_encode($info);
 echo($json);
 
