@@ -1,9 +1,10 @@
-//------------------------------------------
-//アカウント設定情報変更時
-//------------------------------------------
 var num = 0;
 var info;
 var genre_view = [];
+
+var users = []; //usersテーブル用配列
+var user_prof = []; //user_profileテーブル用配列
+
 $(function () {
 	$.ajax({
 		url: "getdata.php",
@@ -17,16 +18,16 @@ $(function () {
 		var view = "";
 		for (var i = 0; i < info[1].length; i++) {
 			view = `<div class='card' style='background-image:url(images/ev/4.jpg)'>
-						<i class="back_icon glyphicon glyphicon-arrow-down" style="display:none"></i>
-						<div class="ln_label">
-							<span class="nope_label">NOPE</span>
-							<span class="like_label">LIKE</span>
-						</div>
-						<div class='desc'>
-							<h1>${info[1][i]['ev_name']}</h1>
-							<p>${info[1][i]['fac_adr']}</p>
-						</div>
-					</div>`;
+					<i class="back_icon glyphicon glyphicon-arrow-down" style="display:none"></i>
+					<div class="ln_label">
+						<span class="nope_label">NOPE</span>
+						<span class="like_label">LIKE</span>
+					</div>
+					<div class='desc'>
+						<h1>${info[1][i]['ev_name']}</h1>
+						<p>${info[1][i]['fac_adr']}</p>
+					</div>
+				</div>`;
 			$("#fac").prepend(view);
 		}
 
@@ -49,8 +50,8 @@ $(function () {
 		}
 		$("#genre").html(genre_view[num]);
 
-
 		$(".card").draggable({
+
 			drag: function (event, ui) {
 				var offset = $(this).offset();
 				if (offset.left < 0) {
@@ -235,6 +236,7 @@ $(function () {
 
 		});
 
+
 		//マイページの基本情報埋め込み
 		$(".uname").html(info[3]['name']);
 		$(".hadr").html(info[3]['home_adr_name']);
@@ -310,33 +312,7 @@ $(function () {
 			}
 		});
 	});
-
-	var users = []; //usersテーブル用配列
-	var user_prof = []; //user_profileテーブル用配列
-	$(".mypro_edit").change(function (e) {
-		var field = $(e.target).attr("name");
-		var value = $(e.target).val();
-
-		if (field == "uname") {
-			users["name"] = value;
-		} else if (field == "emailad_edit") {
-			users["email"] = value;
-		} else if (field == "workad_edit") {
-			user_prof["work_adr_id"] = value;
-		} else if (field == "hormad_edit") {
-			user_prof["horm_adr_id"] = value;
-		} else if (field == "nayami") {
-			user_prof["nayami"] = value;
-		}
-		updateAcInfo(users, user_prof);
-	})
-
-	function updateAcInfo(field, param) {
-		console.log(field);
-		console.log(param);
-	}
-
-})
+}) //End オンロード
 
 //下3つをクリックした時のアクション
 $(".like_btn,.s_like_btn,.nope_btn").on("click", function() {
@@ -391,4 +367,12 @@ function updateTrend(type) {
 	$("#plc_area").html(info[1][num]['plc_area']);
 	$("#genre").html(genre_view[num]);
 
+}
+
+function updateAcInfo(field, param) {
+	console.dir(field);
+	console.dir(param);
+	
+	console.log(isset(field));
+	console.log(isset(param));
 }
