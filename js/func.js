@@ -17,7 +17,7 @@ $(function () {
 		console.log(info);
 		var view = "";
 		for (var i = 0; i < info[1].length; i++) {
-			view = `<div class='card' style='background-image:url(images/ev/4.jpg)'>
+			view = `<div class='card' style='background-image:url(images/ev/${info[1][i]["e_id"]}.jpg)'>
 					<i class="back_icon glyphicon glyphicon-arrow-down" style="display:none"></i>
 					<div class="ln_label">
 						<span class="nope_label">NOPE</span>
@@ -232,8 +232,21 @@ $(function () {
 				"top": "-=130%"
 			}, "fast");
 			$("body").css("overflow-y", "auto");
-
-
+			updateAcInfo(users,user_prof);
+			
+			//お悩み選択変更
+			var chg_nds = $('[class="chg_needs"]').map(function(){
+				if($(this).prop('checked')){
+					return $(this).val()+"=1"
+				}else{
+					return $(this).val()+"=0"
+				}
+			}).get().join(',');
+			
+			if(chg_nds.length>0){
+				updateNeeds("user_profile",chg_nds);
+			}
+			
 		});
 
 
@@ -247,31 +260,40 @@ $(function () {
 
 		//プロフィール編集画面
 		//name
-		$(':text[name=uname]').val(info[3]['name']);
+		$(':text[name=name]').val(info[3]['name']);
 
 		//地域select
 		var plc_slct_hm = "";
 		for (var i = 0; i < info[4].length; i++) {
 			if (info[3]['home_adr_id'] == info[4][i]["plc_id"]) {
-				plc_slct_hm += `<option selected>${info[4][i]["name"]}</option>`;
+				plc_slct_hm += `<option value=${i} selected>${info[4][i]["name"]}</option>`;
 			}
-			plc_slct_hm += `<option>${info[4][i]["name"]}</option>`;
+			plc_slct_hm += `<option value=${i}>${info[4][i]["name"]}</option>`;
 		}
 		$("#homead_edit").html(plc_slct_hm);
 
 		var plc_slct_wk = "";
 		for (var i = 0; i < info[4].length; i++) {
 			if (info[3]['work_adr_id'] == info[4][i]["plc_id"]) {
-				plc_slct_wk += `<option selected>${info[4][i]["name"]}</option>`;
+				plc_slct_wk += `<option value=${i} selected>${info[4][i]["name"]}</option>`;
 			}
-			plc_slct_wk += `<option>${info[4][i]["name"]}</option>`;
+			plc_slct_wk += `<option value=${i}>${info[4][i]["name"]}</option>`;
 		}
 		$("#workad_edit").html(plc_slct_wk);
 
 		//メアドinput
-		$(':text[name=emailad_edit]').val(info[3]['email']);
+		$(':text[name=email]').val(info[3]['email']);
 
 		//ニーズ（悩み）
+		if(info[3]["training"]=="1"){
+			$("#chg_needs_tr").prop("checked",true);
+		}
+		if(info[3]["friend"]=="1"){
+			$("#chg_needs_fr").prop("checked",true);
+		}
+		if(info[3]["learning"]=="1"){
+			$("#chg_needs_lr").prop("checked",true);
+		}
 
 
 	}).error(function () {
@@ -369,10 +391,76 @@ function updateTrend(type) {
 
 }
 
-function updateAcInfo(field, param) {
-	console.dir(field);
-	console.dir(param);
-	
-	console.log(isset(field));
-	console.log(isset(param));
+$(".mypro_edit").change(function(e){
+	var target = $(e.target);
+	if(target.attr('name') == 'name'){
+		users[0] = "users";
+		users[1] = target.val();
+	}else if(target.attr('name') == 'email'){
+		users[0] = "users";
+		users[2] = target.val();
+	}else if(target.attr('name') == 'home_adr_id'){
+		user_prof[0] = "user_profile";
+		user_prof[1]=target.val();
+	}else if(target.attr('name') == 'work_adr_id'){
+		user_prof[0] = "user_profile";
+		user_prof[2]=target.val();
+//	}else if(target.attr('name') == 'nayami'){
+
+	}
+});
+
+function updateAcInfo(users_d, user_prof_d) {
+	if (users_d.length > 0){
+		$.ajax({
+			url: "chg_uinfo.php",
+			type: "POST",
+			data:{request:users_d}
+		}).success(function() {
+			// 通信成功時の処理
+			console.log("success");
+		}).error(function() {
+			// 通信失敗時の処理
+			console.log("error");
+		}).complete(function() {
+			// 通信完了時の処理
+			console.log("fin");
+		});
+	}
+	if (user_prof_d.length > 0){
+		$.ajax({
+			url: "chg_uinfo.php",
+			type: "POST",
+			data:{request:user_prof_d}
+		}).success(function() {
+			// 通信成功時の処理
+			console.log("success");
+		}).error(function() {
+			// 通信失敗時の処理
+			console.log("error");
+		}).complete(function() {
+			// 通信完了時の処理
+			console.log("fin");
+		});
+	}
+}
+
+function updateNeeds(tbl_name,item){
+	$.ajax({
+	url: "chg_acinfo.php",
+	type: "POST",
+	data:{
+		tbl:tbl_name,
+		column:item
+		 }
+	}).success(function() {
+		// 通信成功時の処理
+		console.log("success");
+	}).error(function() {
+		// 通信失敗時の処理
+		console.log("error");
+	}).complete(function() {
+	// 通信完了時の処理
+	console.log("fin");
+});
 }

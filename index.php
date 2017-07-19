@@ -135,13 +135,13 @@ session_start();
 				<div class="form-group">
 					<label class="control-label col-xs-4 text-right">Name</label>
 					<div class="col-xs-6">
-						<input type="text" name="uname" class="form-control">
+						<input type="text" name="name" class="form-control">
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="control-label col-xs-4 text-right">email</label>
 					<div class="col-xs-6">
-						<input type="text" name="emailad_edit" class="form-control">
+						<input type="text" name="email" class="form-control">
 					</div>
 				</div>
 <!--
@@ -155,24 +155,23 @@ session_start();
 				<div class="form-group">
 					<label class="control-label col-xs-4 text-right">勤務地</label>
 					<div class="col-xs-6">
-						<select class="form-control" name="workad_edit" id="workad_edit"></select>
+						<select class="form-control" name="work_adr_id" id="workad_edit"></select>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="control-label col-xs-4 text-right">居住地</label>
 					<div class="col-xs-6">
-						<select class="form-control" name="homead_edit" id="homead_edit"></select>
+						<select class="form-control" name="home_adr_id" id="homead_edit"></select>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="control-label col-xs-4 text-right">解決課題</label>
 					<div class="col-xs-6 text-left">
 							<label>
-								<input type="checkbox" name="nayami" value="0"> 運動不足 
-								<input type="checkbox" name="nayami" value="1"> 友達欲しい 
-								<input type="checkbox" name="nayami" value="2"> 学びたい 
+								<input type="checkbox" class="chg_needs" value="training" id="chg_needs_tr"> 運動不足 
+								<input type="checkbox" class="chg_needs" value="friend" id="chg_needs_fr"> 友達欲しい 
+								<input type="checkbox" class="chg_needs" value="learning" id="chg_needs_lr"> 学びたい 
 							</label>
-						
 					</div>
 				</div>
 				<div class="form-group">

@@ -1,11 +1,12 @@
 <?php
+session_start();
 include("db.php");
 $pdo = db_con();
 
 //iniファイル読み込み&変数格納
 $set = parse_ini_file("setting.ini");
-$g_num = $set["genre_num"];
-$plc_num = $set["plc_num"];
+$g_num = $_SESSION["genre_num"] = $set["genre_num"];
+$plc_num = $_SESSION["plc_num"] = $set["plc_num"];
 $n_gnr_per = $set["new_genre_per"];
 
 //先頭に表示している施設の順番
@@ -43,11 +44,12 @@ if($prfl_stts==false){
 
 }else{
 	$prfl_re = $prfl->fetch(PDO::FETCH_ASSOC);
-	$tr     = $prfl_re["training"];
-	$fr     = $prfl_re["friend"];
-	$lrng   = $prfl_re["learning"];
-	$hm_adr = $prfl_re["home_adr_id"];
-	$wk_adr = $prfl_re["work_adr_id"];
+	$_SESSION["user_name"] = $prfl_re["name"];
+	$tr     = $_SESSION["training"] = $prfl_re["training"];
+	$fr     = $_SESSION["friend"] = $prfl_re["friend"];
+	$lrng   = $_SESSION["learning"] = $prfl_re["learning"];
+	$hm_adr = $_SESSION["home_adr_id"] = $prfl_re["home_adr_id"];
+	$wk_adr = $_SESSION["work_adr_id"] = $prfl_re["work_adr_id"];
 }
 $prfl_arr = [];
 if($tr == 1) {
@@ -175,8 +177,8 @@ for ($i=0;$i<$g_num;$i++){ //ジャンルの種類の数だけループ
 	$sql .= "ON event_info.fac_id = fac_info.fac_id ";
 	$sql .= "INNER JOIN place ";
 	$sql .= "ON event_info.plc_id = place.plc_id ";
-	$sql .= "WHERE ".$prfl_where." AND genre_id_".$i." = 1 AND event_info.plc_id=".$hm_adr." OR event_info.plc_id = ".$wk_adr." ";
-	$sql .="limit ".round($gnr_per[$i]/10).")";
+	$sql .= "WHERE (".$prfl_where.") AND genre_id_".$i." = 1 AND (event_info.plc_id=".$hm_adr." OR event_info.plc_id = ".$wk_adr.") ";
+	$sql .="limit ".round($gnr_per[$i]).")";
 }
 $sql .= " order by rand()";
 
@@ -249,7 +251,6 @@ $plc_info=[];
 if($plc_info_stts==false){
 	$error = $place_info->errorInfo();
 	exit("ErrorQuery:".$error[2]);
-
 }else{
 	$i=0;
 	while($plc_info_re = $place_info->fetch(PDO::FETCH_ASSOC)){
